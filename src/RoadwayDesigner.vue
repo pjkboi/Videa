@@ -112,7 +112,7 @@
         <!-- <rect class="svg" fill="grey" x="0" y="90%" width="100" height="25"></rect>
         <rect class="svg" fill="grey" x="1400" y="90%" width="100" height="25"></rect>-->
         <svg v-for="(offset, index) in offsetList" :key="index">
-          <Sidewalk
+          <Sidewalk 
             :title="offset.fill"
             :x="offset.x"
             :y="260"
@@ -336,7 +336,7 @@
           marker-start="url(#cross)"
         ></line>
         <!-- red lines for selected elements -->
-        <!-- <line
+        <line
         v-if="index==selectedElementId && selectedElement "  
           :x1="offset.x+3"
           :y1="140"
@@ -345,7 +345,7 @@
           style="stroke:rgb(247, 28, 0);stroke-width:2; opacity: 0.8;"
           marker-end="url(#arrow)"
           marker-start="url(#arrow)"
-        ></line> -->
+        ></line>
        
         <line
         v-if="index==selectedElementId && selectedElement"  
@@ -356,12 +356,14 @@
           style="stroke:rgb(247, 28, 0);stroke-width:2; opacity: 0.8"
         ></line>
         <line
+         class="draggable"
+        @click="drag"
         v-if="index==selectedElementId && selectedElement"   
           :x1="offset.x+offset.width"
           y1="90%"
           :x2="offset.x+offset.width"
           :y2="140"
-          style="stroke:rgb(247, 28, 0);stroke-width:4; opacity: 0.8"
+          style="stroke:rgb(247, 28, 0);stroke-width:14; opacity: 0.8"
         ></line>
         <text
         v-if="index==selectedElementId && selectedElement"  
@@ -372,9 +374,9 @@
         </svg>
         
       </svg>
-       <div class="slidecontainer">
+       <!-- <div class="slidecontainer">
           <input type="range" min="1" max="10" v-model="sliderValue" @input="changeWidth" class="slider" id="myRange">
-      </div>
+      </div> -->
     </div>
     <div id="planView">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1500" preserveAspectRatio="none">
@@ -770,6 +772,52 @@ export default {
     }
   },
   methods: {
+    drag: function(evt){
+      var svg = evt.target;
+      var selectedElement = false;
+      var offset;
+      var width = this.offsetList[this.offsetList.length-1].width/this.width;
+      
+      svg.addEventListener('mousedown', startDrag);
+      svg.addEventListener('mousemove', drag);
+      svg.addEventListener('mouseup', endDrag);
+      svg.addEventListener('mouseleave', endDrag);
+      function startDrag(evt) {
+        
+        if (evt.target.classList.contains('draggable')) {
+
+          selectedElement = evt.target;
+     offset = getMousePosition(evt);
+    offset.x -= parseFloat(selectedElement.getAttributeNS(null, "x1"));
+                  console.log(selectedElement);
+        }
+
+      }
+      function drag(evt) {
+        if (selectedElement) {
+          console.log("selectedElement");
+            evt.preventDefault();
+            var coord = getMousePosition(evt);
+            selectedElement.setAttributeNS(null, "x1", coord.x - offset.x);
+            selectedElement.setAttributeNS(null, "x2", coord.x - offset.x);
+            // var x1 = parseFloat(selectedElement.getAttributeNS(null, "x1"));
+            // var x2 = parseFloat(selectedElement.getAttributeNS(null, "x2"));
+            // selectedElement.setAttributeNS(null, "x1", x1 + 1); //
+            // selectedElement.setAttributeNS(null, "x2", x2 + 1); //
+          }
+      }
+      function endDrag(evt) {
+        selectedElement = null;
+      }
+      function getMousePosition(evt) {
+        var CTM = svg.getScreenCTM();
+        return {
+          x: (evt.clientX - CTM.e) / CTM.a,
+          y: (evt.clientY - CTM.f) / CTM.d
+        };
+      }
+    },
+    
     changeWidth(){
       if(this.sliderValue==0){
         this.tempSlider = 0;
@@ -1825,6 +1873,12 @@ export default {
 };
 </script>
 <style>
+.static {
+  cursor: not-allowed;
+}
+.draggable {
+  cursor: move;
+}
 .slider {
     -webkit-appearance: none;  /* Override default CSS styles */
     appearance: none;
