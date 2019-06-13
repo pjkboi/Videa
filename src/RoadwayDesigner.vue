@@ -372,9 +372,9 @@
         </svg>
         
       </svg>
-       <div class="slidecontainer">
+       <!-- <div class="slidecontainer">
           <input type="range" min="1" max="10" v-model="sliderValue" @input="changeWidth" class="slider" id="myRange">
-      </div>
+      </div> -->
     </div>
     <div id="planView">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1500" preserveAspectRatio="none">
