@@ -336,7 +336,7 @@
           marker-start="url(#cross)"
         ></line>
         <!-- red lines for selected elements -->
-        <!-- <line
+        <line
         v-if="index==selectedElementId && selectedElement "  
           :x1="offset.x+3"
           :y1="140"
@@ -345,7 +345,7 @@
           style="stroke:rgb(247, 28, 0);stroke-width:2; opacity: 0.8;"
           marker-end="url(#arrow)"
           marker-start="url(#arrow)"
-        ></line> -->
+        ></line>
        
         <line
         v-if="index==selectedElementId && selectedElement"  
