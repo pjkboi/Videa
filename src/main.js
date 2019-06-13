@@ -17,8 +17,6 @@ import "ccg-vue-tools/dist/ccg-vue-tools.css";
 import XLSX from 'xlsx';
 import vueXlsxTable from 'vue-xlsx-table';
 import mathRounding from 'mathjs';
-import VueSticky from 'vue-sticky';
-Vue.use(VueSticky)
 Vue.use(vueXlsxTable, {rABS: false});
 Vue.use(mathRounding);
 Vue.use(CcgVueTools);

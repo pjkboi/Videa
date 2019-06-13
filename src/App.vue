@@ -5,7 +5,7 @@
         <b-navbar toggleable="md" type="dark" id="navbar">
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
             <b-navbar-brand href="#"> VIDEA</b-navbar-brand>   
-            <vue-xlsx-table @on-select-file="handleSelectedFile">open dbf</vue-xlsx-table>
+            <vue-xlsx-table @on-select-file="handleSelectedFile" v-show="adminPg">open dbf</vue-xlsx-table>
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-nav class="ml-auto">
                   <!-- at click call pageSwitcher -->
@@ -19,7 +19,8 @@
     <!-- inserting components in the body of the application -->
     <ProjectPicker v-show="projectPickerSwitch" v-on:EditProject="dataSorter($event)" v-on:onChange="selectedIdRetriever($event)" :getIds="getIds"></ProjectPicker><!-- projectpicker component which passes a string back to change whats on screen to the next component -->
     <RoadwayDesigner v-show="roadWayDesignerSwitch" :getData="getData" :convertedDataStorage="convertedDataStorage" ></RoadwayDesigner>
-
+    <Admin v-if="adminPg"></Admin>
+  <b-button id=adminbtn v-show="adminbtn" @click="pageSwitcher('Admin')">Admin</b-button>
   </div>
 </template>
 
@@ -30,6 +31,7 @@
   import streetViewer from "./streetViewer.vue";
   import RoadwayDesigner from "./RoadwayDesigner.vue";
   import Dropbox from "./Dropbox.vue";
+  import Admin from "./Admin.vue"
   import test from "./test.vue";
   export default {
     //declaring the components
@@ -39,6 +41,7 @@
       streetViewer,
       RoadwayDesigner,
       Dropbox,
+      Admin,
       test
     },
     name: "app",
@@ -48,6 +51,8 @@
         projectPickerSwitch: true, // true is active
         roadWayDesignerSwitch: false, // false is inactive
         dashboardSwitch: false,
+        adminbtn: true,
+        adminPg: false,
         crossSectionArray: [], //this is going to be the container that holds all the instances of the dbf file
         getData: {}, // data object var
         getName: [], // name of columns array
@@ -63,18 +68,31 @@
           case "ProjectPicker":
             this.projectPickerSwitch = true,
             this.roadWayDesignerSwitch = false,
-            this.dashboardSwitch = false
+            this.dashboardSwitch = false,
+            this.adminbtn = true,
+            this.adminPg = false
             break;
           case "roadwayDesigner":
             this.projectPickerSwitch = false,
             this.roadWayDesignerSwitch = true,
-            this.dashboardSwitch = false
+            this.dashboardSwitch = false,
+            this.adminbtn = false,
+            this.adminPg = false
             
             break;
           case "Dashboard":
             this.projectPickerSwitch = false,
             this.roadWayDesignerSwitch = false,
-            this.dashboardSwitch = true
+            this.dashboardSwitch = true,
+            this.adminbtn = false,
+            this.adminPg = false
+            break;
+          case "Admin":
+            this.projectPickerSwitch = false,
+            this.roadWayDesignerSwitch = false,
+            this.dashboardSwitch = false,
+            this.adminbtn = true,
+            this.adminPg = true
             break;
         }
       },
@@ -175,5 +193,10 @@
     font-family: "Avenir", Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+  #adminbtn{
+    position: fixed;
+    top: 90%;
+    margin: 1em;
   }
 </style>

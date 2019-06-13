@@ -336,7 +336,7 @@
           marker-start="url(#cross)"
         ></line>
         <!-- red lines for selected elements -->
-        <line
+        <!-- <line
         v-if="index==selectedElementId && selectedElement "  
           :x1="offset.x+3"
           :y1="140"
@@ -345,7 +345,8 @@
           style="stroke:rgb(247, 28, 0);stroke-width:2; opacity: 0.8;"
           marker-end="url(#arrow)"
           marker-start="url(#arrow)"
-        ></line>
+        ></line> -->
+       
         <line
         v-if="index==selectedElementId && selectedElement"  
           :x1="offset.x"
@@ -371,6 +372,9 @@
         </svg>
         
       </svg>
+       <div class="slidecontainer">
+          <input type="range" min="1" max="10" v-model="sliderValue" @input="changeWidth" class="slider" id="myRange">
+      </div>
     </div>
     <div id="planView">
       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1500 1500" preserveAspectRatio="none">
@@ -648,6 +652,8 @@ export default {
   },
   data() {
     return {
+      tempSlider: 0,
+      sliderValue:0,
       undoDelete: [],
       undoReset:[],
       undoCounter:0,
@@ -764,6 +770,27 @@ export default {
     }
   },
   methods: {
+    changeWidth(){
+      if(this.sliderValue==0){
+        this.tempSlider = 0;
+      }
+      var width = this.offsetList[this.offsetList.length-1].width/this.width;
+      var tempWidth = width;
+      if(this.sliderValue>this.tempSlider){
+      var add = (tempWidth+(this.sliderValue/10))*this.width;
+      this.offsetList[this.offsetList.length-1].width = add;
+      this.totalWidth = parseFloat((((this.totalWidth*10)/10) - (((this.sliderValue/10)*10)/10)).toFixed(1));
+      this.tempSlider = this.sliderValue;
+      console.log((tempWidth+(this.sliderValue/10)));
+      }
+      else if(this.sliderValue<=this.tempSlider){
+      var sub = (tempWidth-(this.sliderValue/10))*this.width;
+      this.offsetList[this.offsetList.length-1].width = sub;
+      this.totalWidth = parseFloat((((this.totalWidth*10)/10) + (((this.sliderValue/10)*10)/10)).toFixed(1));
+      this.tempSlider = this.sliderValue;
+      console.log(sub);
+      }
+    },
     wait(ms){
     var d = new Date();
     var d2 = null;
@@ -1798,6 +1825,38 @@ export default {
 };
 </script>
 <style>
+.slider {
+    -webkit-appearance: none;  /* Override default CSS styles */
+    appearance: none;
+    height: 25px; /* Specified height */
+    background: #d3d3d3; /* Grey background */
+    outline: none; /* Remove outline */
+    opacity: 0.7; /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s; /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+/* Mouse-over effects */
+.slider:hover {
+    opacity: 1; /* Fully shown on mouse-over */
+}
+
+/* The slider handle (use -webkit- (Chrome, Opera, Safari, Edge) and -moz- (Firefox) to override default look) */ 
+.slider::-webkit-slider-thumb {
+    -webkit-appearance: none; /* Override default look */
+    appearance: none;
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
+
+.slider::-moz-range-thumb {
+    width: 25px; /* Set a specific slider handle width */
+    height: 25px; /* Slider handle height */
+    background: #4CAF50; /* Green background */
+    cursor: pointer; /* Cursor on hover */
+}
 #modal{
   height: auto;
   overflow-x: auto;
