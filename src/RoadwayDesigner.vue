@@ -776,6 +776,8 @@ export default {
       var svg = evt.target;
       var selectedElement = false;
       var offset;
+      var width = this.offsetList[this.offsetList.length-1].width/this.width;
+      
       svg.addEventListener('mousedown', startDrag);
       svg.addEventListener('mousemove', drag);
       svg.addEventListener('mouseup', endDrag);
