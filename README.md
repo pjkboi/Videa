@@ -1,6 +1,7 @@
 # videa
 
 > A Vue.js project
+>PJ Khamvongsa
 
 ## Build Setup
 
