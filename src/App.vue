@@ -5,7 +5,7 @@
         <b-navbar toggleable="md" type="dark" id="navbar">
             <b-navbar-toggle target="nav_collapse"></b-navbar-toggle>
             <b-navbar-brand href="#"> VIDEA</b-navbar-brand>   
-            <vue-xlsx-table @on-select-file="handleSelectedFile" v-show="adminPg">open dbf</vue-xlsx-table>
+            <vue-xlsx-table @on-select-file="handleSelectedFile" v-show="openFilebtn">open dbf</vue-xlsx-table>
             <b-collapse is-nav id="nav_collapse">
                 <b-navbar-nav class="ml-auto">
                   <!-- at click call pageSwitcher -->
@@ -19,7 +19,7 @@
     <!-- inserting components in the body of the application -->
     <ProjectPicker v-show="projectPickerSwitch" v-on:EditProject="dataSorter($event)" v-on:onChange="selectedIdRetriever($event)" :getIds="getIds"></ProjectPicker><!-- projectpicker component which passes a string back to change whats on screen to the next component -->
     <RoadwayDesigner v-show="roadWayDesignerSwitch" :getData="getData" :convertedDataStorage="convertedDataStorage" ></RoadwayDesigner>
-    <Admin v-if="adminPg"></Admin>
+    <Admin v-if="adminPg" v-on:Admin="AdminSwitch($event)"></Admin>
   <b-button id=adminbtn v-show="adminbtn" @click="pageSwitcher('Admin')">Admin</b-button>
   </div>
 </template>
@@ -53,6 +53,7 @@
         dashboardSwitch: false,
         adminbtn: true,
         adminPg: false,
+        openFilebtn: false,
         crossSectionArray: [], //this is going to be the container that holds all the instances of the dbf file
         getData: {}, // data object var
         getName: [], // name of columns array
@@ -91,10 +92,14 @@
             this.projectPickerSwitch = false,
             this.roadWayDesignerSwitch = false,
             this.dashboardSwitch = false,
-            this.adminbtn = true,
+            this.adminbtn = false,
             this.adminPg = true
             break;
         }
+      },
+      AdminSwitch(e){
+        console.log("admin" + e);
+        this.openFilebtn = e;
       },
       selectedIdRetriever(e){
        console.log(this.getData);

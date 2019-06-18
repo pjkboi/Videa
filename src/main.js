@@ -14,9 +14,10 @@ import "vuesax/dist/vuesax.css"; //Vuesax styles
 import VueIntro from "vue-introjs";
 import CcgVueTools from "ccg-vue-tools";
 import "ccg-vue-tools/dist/ccg-vue-tools.css";
-import XLSX from 'xlsx';
+import XLSX from '../node_modules/xlsx';
 import vueXlsxTable from 'vue-xlsx-table';
 import mathRounding from 'mathjs';
+Vue.use(XLSX);
 Vue.use(vueXlsxTable, {rABS: false});
 Vue.use(mathRounding);
 Vue.use(CcgVueTools);
@@ -27,7 +28,7 @@ Vue.use(router);
 Vue.use(BootstrapVue);
 Vue.use(VModal);
 Vue.use(Vuetify);
-Vue.use(XLSX);
+
 // const routes = [
 //   { path: "/streetViewer", component: streetViewer },
 //   { path: "/projectPicker", component: projectPicker}

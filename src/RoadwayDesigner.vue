@@ -94,6 +94,7 @@
         <b-button variant="danger" @click="rowReset" id="btnReset">Reset</b-button>
         <b-button variant="danger" @click="svgDelete" id="btnDelete">Delete</b-button>
         <b-button variant="danger" @click="undo" id="btnUndo">Undo</b-button>
+        <b-button variant="danger" @click="submit" id="btnSubmit">Submit</b-button>
         <b-button variant @click="Populate" hidden id="RDPrepopulation">Test</b-button>
         <b-button variant="success" hidden @click="startInterval(), animationOn=!animationOn" id="solveRoutesBtn" ref="streetViewer">Anime</b-button>
       </div>
@@ -225,7 +226,7 @@
             preserveAspectRatio="xMidYMax meet"
           ></TurnLane>
           <rect
-            @click="sizeLines(index)"
+            @click="sizeLines(index), title = offset.title"
             class="svg"
             :fill="offset.fill"
             :x="offset.x"
@@ -356,8 +357,11 @@
           style="stroke:rgb(247, 28, 0);stroke-width:2; opacity: 0.8"
         ></line>
         <line
-         class="draggable"
-        @click="drag"
+        class="draggable"
+        @mousedown="startDrago"
+        @mousemove="drago"
+        @mouseup="endDrago"
+        @mouseleave="endDrago"
         v-if="index==selectedElementId && selectedElement"   
           :x1="offset.x+offset.width"
           y1="90%"
@@ -616,7 +620,8 @@ import TurnLane from "./svg/TurnLane";
 import Slider from "./Slider";
 import CarLineTop from "./svg/CarLineTop";
 import CarLineBottom from "./svg/CarLineBottom";
-import Info from "./Info"
+import Info from "./Info";
+import XLSX from 'xlsx';
 const disabled = true;
 export default {
   name: "gio",
@@ -755,7 +760,10 @@ export default {
       adjustmentX: 0,
       tested: "",
       sidewalkWidth: 0,
-      infoType: null
+      infoType: null,
+      data: [],
+      titleArray:[],
+      widthArray:[],
     };
   },
   created() {
@@ -772,6 +780,97 @@ export default {
     }
   },
   methods: {
+    getRange(range) {
+      this.selectedElementRange = range;
+      alert(this.selectedElementRange);
+    },
+    ///////////////////////////////////////////////////////////////////////////////////////////]/
+    startDrago(evt) {
+      this.tempObjectWidth = this.offsetList[this.selectedElementId].width;
+       if (evt.target.classList.contains('draggable')) {
+        this.selectedElementDrag = evt.target;
+        this.offsetDrag = this.getMousePosition(evt);
+        this.offsetDrag.x -= parseFloat(this.selectedElementDrag.getAttributeNS(null, "x1"));
+        console.log(this.offsetDrag.x);          
+       }
+     },
+     drago(evt) {
+       if (this.selectedElementDrag) {
+        evt.preventDefault();
+        var coord = this.getMousePosition(evt);
+        this.selectedElementDrag.setAttributeNS(null, "x1", coord.x - this.offsetDrag.x);
+        this.selectedElementDrag.setAttributeNS(null, "x2", coord.x - this.offsetDrag.x);
+        //alert('success');
+        var newX = coord.x - this.offsetDrag.x;
+        this.dragAdjust(newX);
+        console.log(this.selectedElementDrag.x1)
+        }
+      },
+     endDrago(evt) {
+       this.selectedElementDrag = null;
+     },
+      dragAdjust(newX) {
+      
+      //this.offsetList[this.selectedElementId].width = this.offsetList[this.selectedElementId].width+( newX - (this.offsetList[this.selectedElementId].x+this.offsetList[this.selectedElementId].width));
+      var modOfObjectWidth = (this.offsetList[this.selectedElementId].width+( newX - (this.offsetList[this.selectedElementId].x+this.offsetList[this.selectedElementId].width)) - this.tempObjectWidth)% this.width;
+      //var divOfObjectWidth = (this.offsetList[this.selectedElementId].width - this.tempObjectWidth)% this.width;
+      if (modOfObjectWidth < 0)
+      {
+        var numOfTimes = parseInt(modOfObjectWidth/(this.width*0.1)); // idk how to name this shit
+        for (var i = 0; i > numOfTimes; i--)
+        {
+          this.changeSize("Deduct", this.selectedElementId);
+          console.log(this.selectedElementId);
+          console.log("hi");
+        }
+        console.log(numOfTimes);
+      }else if ( modOfObjectWidth > 0)
+      {
+         var numOfTimes = parseInt(modOfObjectWidth/(this.width*0.1)); // idk how to call this shit
+        for (var i = 0; i < numOfTimes; i++)
+        {
+          this.changeSize("Add", this.selectedElementId);
+          console.log(this.selectedElementId);
+          console.log("hi");
+        }
+        console.log(numOfTimes);
+      }
+      //console.log(tempObjectWidth - this.offsetList[this.selectedElementId].width);
+      console.log(modOfObjectWidth);
+      console.log(this.offsetList[this.selectedElementId].width);
+     },
+     getMousePosition(evt) {
+       var svg = evt.target;
+       var CTM = svg.getScreenCTM();
+       return {
+         x: (evt.clientX - CTM.e) / CTM.a,
+         y: (evt.clientY - CTM.f) / CTM.d
+       };
+     },
+    submit(){
+      for(var i=0;i<this.offsetList.length;i++){
+        this.titleArray.push(this.offsetList[i].title);
+        var width = this.offsetList[i].width/this.width;
+        this.widthArray.push(width);
+      }
+      this.data.push(this.titleArray);
+      this.data.push(this.widthArray);
+      console.log(this.data);
+      /* generate workbook object from table */
+      // /* generate file and force a download*/
+      var worksheet = XLSX.utils.aoa_to_sheet(this.data);
+      var new_workbook = XLSX.utils.book_new();
+      XLSX.utils.book_append_sheet(new_workbook, worksheet, "SheetJS");
+     if( confirm("This will download the spreadsheet")){
+       XLSX.writeFile(new_workbook, "sheetjs.xlsx");
+     }
+      
+      this.titleArray.splice(0, this.titleArray.length);
+      this.widthArray.splice(0, this.widthArray.length);
+      this.data.splice(0, this.data.length);
+      
+      
+    },
     drag: function(evt){
       var svg = evt.target;
       var selectedElement = false;

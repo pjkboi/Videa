@@ -15,6 +15,19 @@
             placeholder="Enter email"
             ></b-form-input>
         </b-form-group>
+        <b-form-group
+            id="input-group-2"
+            label="Password:"
+            label-for="input-2"
+        >
+            <b-form-input
+            id="input-2"
+            v-model="form.password"
+            type="password"
+            required
+            placeholder="Enter Password"
+            ></b-form-input>
+        </b-form-group>
 
         <b-button type="submit" variant="primary">Submit</b-button>
         <b-button type="reset" variant="danger">Reset</b-button>
@@ -30,20 +43,34 @@
       return {
         form: {
           email: '',
-          checked: []
+          password: ''
+        },
+        admin:{
+          name: 'admin@admin.com',
+          pw: 'admin'
         },
         show: true
       }
     },
     methods: {
       onSubmit(evt) {
+        console.log(this.form.email);
+        console.log(this.form.password);
+        if(this.form.email == this.admin.name && this.form.password == this.admin.pw){
+          console.log(this.form.email);
+          this.$emit("Admin", this.show);
+        }
+        else{
+          alert("Not the admin");
+        }
         evt.preventDefault()
-        alert(JSON.stringify(this.form))
+        //alert(JSON.stringify(this.form))
       },
       onReset(evt) {
         evt.preventDefault()
         // Reset our form values
         this.form.email = ''
+        this.form.password = ''
         // Trick to reset/clear native browser form validation state
         this.show = false
         this.$nextTick(() => {

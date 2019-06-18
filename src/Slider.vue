@@ -4,6 +4,7 @@
         <vue-slide-bar  id="slider" v-model="slider.value"
         :data="standards(name)"
         :range="standards(name)">
+
         <!-- <template slot="tooltip" slot-scope="tooltip">
         <img src="static/vue-slide-bar/rectangle-slider.svg">
         </template> -->
@@ -12,7 +13,7 @@
           The element is too big!!!
         </div>
         <b-button @click="onClick">Add {{name}}</b-button>
-        <b-button @click="backbtn">Back</b-button>
+        <b-button @click="backbtn">Back </b-button>
     </div>
 </template>
 <script>
@@ -23,11 +24,13 @@ export default {
   },
   props: {
     name: String,
-    totalWidth: Number
+    totalWidth: Number,
+    title: String
   },
   data() {
     return {
       back: false,
+      standarts: null,
       slider: {
         value: 1
       },
@@ -179,12 +182,34 @@ export default {
       ]
     };
   },
+  watch: {
+    title: function() {
+      for(var i = 0; i < this.standardsArray.length; i++)
+      {
+        if (this.standardsArray[i].title == this.title)
+        {
+          this.standarts = this.standardsArray[i].roadStandard;
+        }
+      }
+      this.$emit("title", this.standarts);
+    }
+  },
   methods: {
     backbtn(){
       this.$emit("backbtn", this.back);
     },
     onClick() {
       console.log("this is from the slider vue " + this.name);
+      console.log(this.slider);
+      for(var i = 0; i < this.standardsArray.length; i++)
+      {
+        if (this.standardsArray[i].title == this.title)
+        {
+          this.standarts = this.standardsArray[i].roadStandard;
+        }
+      }
+      //console.log(this.standarts);
+      //alert(this.standarts);
       this.$emit("onClick", this.slider.value);
     },
     standards(name) {
